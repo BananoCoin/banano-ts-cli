@@ -1,0 +1,43 @@
+{
+  "name": "@bananocoin/bananots",
+  "version": "0.0.1",
+  "description": "banano typescript",
+  "main": "src/main.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BananoCoin/bananots.git"
+  },
+  "scripts": {
+    "coverage": "nyc -x 'src' -x 'test/util/**' -x 'test/unit/**' ./node_modules/mocha/bin/mocha.js --recursive -t 100000 test/unit",
+    "coverage-all": "nyc ./node_modules/mocha/bin/mocha.js --recursive -t 100000 test/unit",
+    "docs": "jsdoc2md documentation.js dist/index.js > docs/documentation.md",
+    "npm-check-updates": "#npm-check-updates --target minor -u",
+    "clear": "rm -r dist",
+    "preflight": "npm run clear && npm run touch && npm update && npm run npm-check-updates && npm i && npm audit fix && npm run build && npm run prettier && npm run coverage && npm run docs && npm outdated && echo 'preflight passed'",
+    "prettier": "prettier \"**/**.{js,ts,json,css,scss,html}\" --write",
+    "touch": "#find . -exec touch {} \\;",
+    "build": "npx tsc",
+    "test": "./node_modules/mocha/bin/mocha.js --recursive -t 100000 test/unit",
+    "start": "node dist/main.js"
+  },
+  "keywords": [],
+  "author": "coranos",
+  "license": "MIT",
+  "devDependencies": {
+    "@brightlayer-ui/eslint-config": "^3.0.0",
+    "@types/blake2b": "^2.1.0",
+    "@types/node": "^18.7.17",
+    "@typescript-eslint/eslint-plugin": "^5.10.2",
+    "chai": "^4.3.6",
+    "eslint-config-prettier": "^8.3.0",
+    "mocha": "^10.0.0",
+    "nyc": "^15.1.0",
+    "prettier": "^2.4.1",
+    "jsdoc-to-markdown": "^7.1.1",
+    "typescript": "^4.8.3"
+  },
+  "dependencies": {
+    "blake2b": "^2.1.4",
+    "npm-check-updates": "^16.1.2"
+  }
+}
