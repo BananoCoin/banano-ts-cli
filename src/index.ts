@@ -69,7 +69,7 @@ const hexToUint8 = (hexValue: any): any => {
   return uint8;
 };
 
-const decToHex = (decValue: any, bytes: any = null): any => {
+const decToHex = (decValue: any, bytes: number): string => {
   const dec = decValue.toString().split('');
   const sum = [];
   let hex = '';
@@ -86,6 +86,7 @@ const decToHex = (decValue: any, bytes: any = null): any => {
   }
   while (sum.length > 0) {
     const p = sum.pop();
+    /* istanbul ignore else */
     if (p !== undefined) {
       hexArray.push(p.toString(16));
     }
@@ -113,12 +114,6 @@ const generateAccountSecretKeyBytes = (seedBytes: any, accountIndex: any): any =
   b2b.update(seedBytes);
   b2b.update(accountBytes);
   const newKey = b2b.digest();
-
-  // const context = blake.blake2bInit(32);
-  // blake.blake2bUpdate(context, seedBytes);
-  // blake.blake2bUpdate(context, accountBytes);
-  // const newKey = blake.blake2bFinal(context);
-
   return newKey;
 };
 
@@ -142,11 +137,21 @@ const getPublicFromPrivate = (privateKey: string): string => {
   const privateKeyObj: any = crypto.createPrivateKey({ key: privateKeyDer, format: 'der', type: 'pkcs8' });
   const publicKeyObj: any = crypto.createPublicKey({ key: privateKeyObj, format: 'pem' });
   const encodedHex: any = publicKeyObj.export({ format: 'der', type: 'spki' }).toString('hex').toUpperCase();
+  return _removePublicKeyPrefix(encodedHex);
+};
+
+const _removePublicKeyPrefix = (encodedHex:string):string => {
   if (encodedHex.startsWith(PUBLIC_KEY_PREFIX)) {
     return encodedHex.substring(PUBLIC_KEY_PREFIX.length);
   } else {
     throw Error(`unknown prefix, expecting '${PUBLIC_KEY_PREFIX}' cannot decode public key '${encodedHex}'`);
   }
-};
+}
 
-export { getSeed, getPrivateKeyFromSeed, getPublicFromPrivate };
+export {
+  isSeedValid,
+  getSeed,
+  getPrivateKeyFromSeed,
+  getPublicFromPrivate,
+  _removePublicKeyPrefix
+ };

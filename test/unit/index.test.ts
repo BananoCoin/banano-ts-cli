@@ -1,14 +1,22 @@
 'use strict';
 
 // libraries
-const crypto = require('crypto');
-const chai = require('chai');
+import * as crypto from 'crypto';
+import * as chai from 'chai';
 
 // modules
 const expect = chai.expect;
-const index = require('../../dist/index.js');
+import * as index from '../../src/index.ts';
 
 describe('index', () => {
+  it('isSeedValid', async () => {
+    const actual = index.isSeedValid('');
+    const expected = {
+      message:`does not match regex '^[0123456789abcdefABCDEF]{64}$'`,
+      valid:false,
+    };
+    expect(expected).to.deep.equal(actual);
+  });
   it('getSeed', async () => {
     const seed = await index.getSeed();
     const expected = 64;
@@ -29,9 +37,19 @@ describe('index', () => {
     const actual = publicKey.length;
     expect(expected).to.deep.equal(actual);
   });
+  it('getPublicFromPrivate Error', async () => {
+    let actual = 'no error';
+    try {
+      await index._removePublicKeyPrefix('');
+    } catch(error) {
+      actual = error.message;
+    }
+    const expected = `unknown prefix, expecting '302A300506032B6570032100' cannot decode public key ''`;
+    expect(expected).to.deep.equal(actual);
+  });
   it('getPrivateKeyFromSeed Random', async () => {
     const seed = await index.getSeed();
-    const privateKey = await index.getPrivateKeyFromSeed(seed, 0);
+    const privateKey = await index.getPrivateKeyFromSeed(seed, 256*256*256*256);
     const expected = 64;
     const actual = privateKey.length;
     expect(expected).to.deep.equal(actual);
@@ -42,6 +60,16 @@ describe('index', () => {
     const publicKey = await index.getPublicFromPrivate(privateKey);
     const expected = '0357904D36949C0BD319038B26EBD4A166D009E187958612C8068E0D59E6EEE4';
     const actual = publicKey;
+    expect(expected).to.deep.equal(actual);
+  });
+  it('getPrivateKeyFromSeed Error', async () => {
+    let actual = 'no error';
+    try {
+      await index.getPrivateKeyFromSeed('', 0);
+    } catch(error) {
+      actual = error.message;
+    }
+    const expected = `Invalid BANANO seed '', does not match regex '^[0123456789abcdefABCDEF]{64}$'`;
     expect(expected).to.deep.equal(actual);
   });
   it('DERtoPEM 1', () => {
