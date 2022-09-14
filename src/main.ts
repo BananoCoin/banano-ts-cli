@@ -1,4 +1,7 @@
 import * as index from './index';
+import * as httpsRateLimit from 'https-rate-limit';
+
+const bananodeUrl = 'https://kaliumapi.appditto.com/api';
 
 const commands = new Map<string, (arg0: string, arg1: string, arg2: string, arg3: string) => Promise<string>>();
 
@@ -6,6 +9,36 @@ commands.set('getseed', async (arg0: string, arg1: string, arg2: string, arg3: s
   const response = index.getSeed();
   console.log('getseed response', response);
   return response;
+});
+
+commands.set('bgetprivatekey', async (arg0: string, arg1: string, arg2: string, arg3: string): Promise<string> => {
+  const response = index.getPrivateKeyFromSeed(arg0, Number(arg1));
+  console.log('getseed response', response);
+  return response;
+});
+
+commands.set('bgetaccount', async (arg0: string, arg1: string, arg2: string, arg3: string): Promise<string> => {
+  const publicKey = await index.getPublicKeyFromPrivateKey(arg0);
+  console.log('banano getaccount publicKey', publicKey);
+  const account = index.getAccountFromPublicKey(publicKey, index.BANANO_PREFIX);
+  console.log('banano getaccount account', account);
+  return account;
+});
+
+commands.set('bcheckpending', async (arg0: string, arg1: string, arg2: string, arg3: string): Promise<string> => {
+  const accounts = [arg0];
+  const count = parseInt(arg1, 10);
+  // https://docs.nano.org/commands/rpc-protocol/#accounts_pending
+  const formData = {
+    action: 'accounts_pending',
+    accounts: accounts,
+    count: count,
+    threshold: 1,
+  };
+  httpsRateLimit.setUrl(bananodeUrl);
+  const pending = await httpsRateLimit.sendRequest(formData);
+  console.log('banano checkpending response', pending);
+  return pending;
 });
 
 const run = async () => {
