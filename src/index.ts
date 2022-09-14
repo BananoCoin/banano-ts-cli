@@ -11,6 +11,8 @@ const getSeed = async (): Promise<string> => {
 
 const privateToDer = (privateKeyHex: string): Buffer => {
   const derHex = `302e020100300506032b657004220420${privateKeyHex}`;
+  // 06032B6570
+  // need EdDSA with Curve25519 and Blake2b-512 oid
   return Buffer.from(derHex, 'hex');
 };
 
@@ -135,7 +137,7 @@ const bytesToHex = (bytes: any): string => {
 const getPublicFromPrivate = (privateKey: string): string => {
   const privateKeyDer: any = privateToDer(privateKey);
   const privateKeyObj: any = crypto.createPrivateKey({ key: privateKeyDer, format: 'der', type: 'pkcs8' });
-  const publicKeyObj: any = crypto.createPublicKey({ key: privateKeyObj, format: 'pem' });
+  const publicKeyObj: any = crypto.createPublicKey({ key: privateKeyObj });
   const encodedHex: any = publicKeyObj.export({ format: 'der', type: 'spki' }).toString('hex').toUpperCase();
   return _removePublicKeyPrefix(encodedHex);
 };

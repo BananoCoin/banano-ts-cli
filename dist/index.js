@@ -152,7 +152,7 @@ const bytesToHex = (bytes) => {
 const getPublicFromPrivate = (privateKey) => {
     const privateKeyDer = privateToDer(privateKey);
     const privateKeyObj = crypto.createPrivateKey({ key: privateKeyDer, format: 'der', type: 'pkcs8' });
-    const publicKeyObj = crypto.createPublicKey({ key: privateKeyObj, format: 'pem' });
+    const publicKeyObj = crypto.createPublicKey({ key: privateKeyObj });
     const encodedHex = publicKeyObj.export({ format: 'der', type: 'spki' }).toString('hex').toUpperCase();
     return _removePublicKeyPrefix(encodedHex);
 };

@@ -24,11 +24,12 @@ describe('index', () => {
     expect(expected).to.deep.equal(actual);
   });
   it('getPublicFromPrivate Specific', async () => {
-    const privateKey = '6c3c6e1bf93e05ad2a078c7d05b8a944fe071aec93e7337ca5102236c62ec701';
+    // https://docs.nano.org/protocol-design/signing-hashing-and-key-derivation/
+    const privateKey = '0000000000000000000000000000000000000000000000000000000000000000';
     const publicKey = await index.getPublicFromPrivate(privateKey);
-    const expected = '11605690BD4691280DA0718ED8AFE7F41C0E35B434E48EB85F4F346325E7229C';
+    const expected = '19D3D919475DEED4696B5D13018151D1AF88B2BD3BCFF048B45031C1F36D1858';
     const actual = publicKey;
-    expect(expected).to.deep.equal(actual);
+    expect({publicKey:expected}).to.deep.equal({publicKey:actual});
   });
   it('getPublicFromPrivate Random', async () => {
     const seed = await index.getSeed();
@@ -55,12 +56,13 @@ describe('index', () => {
     expect(expected).to.deep.equal(actual);
   });
   it('getPrivateKeyFromSeed Specific', async () => {
-    const seed = '6c3c6e1bf93e05ad2a078c7d05b8a944fe071aec93e7337ca5102236c62ec701';
+    const seed = '6E258B9B43AB60310F2BD06337E9B537CC889F5EC0F90135073F764D55B05524';
     const privateKey = await index.getPrivateKeyFromSeed(seed, 0);
+    const expectedPrivateKey = 'D39B0FC95F926CE7316195C038532E80E23CE6E3033C32D686F60E0D02C7C861';
+    expect({privateKey:expectedPrivateKey}).to.deep.equal({privateKey:privateKey});
     const publicKey = await index.getPublicFromPrivate(privateKey);
-    const expected = '0357904D36949C0BD319038B26EBD4A166D009E187958612C8068E0D59E6EEE4';
-    const actual = publicKey;
-    expect(expected).to.deep.equal(actual);
+    const expectedPublicKey = 'AD9C2EC6D190B8447E91D41F46E0417FAF7F5FD3676A0BE917CA2110ECB2E95A';
+    expect({publicKey:expectedPublicKey}).to.deep.equal({publicKey:publicKey});
   });
   it('getPrivateKeyFromSeed Error', async () => {
     let actual = 'no error';
