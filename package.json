@@ -12,7 +12,7 @@
     "docs": "jsdoc2md documentation.js dist/index.js > docs/documentation.md",
     "npm-check-updates": "#npm-check-updates --target minor -u",
     "clear": "rm -r dist",
-    "preflight": "npm run clear && npm run touch && npm update && npm run npm-check-updates && npm i && npm audit fix && npm run build && npm run prettier && npm run coverage && npm run docs && npm outdated && echo 'preflight passed'",
+    "preflight": "npm run clear && npm run touch && npm update && npm run npm-check-updates && npm i && npm audit fix && npm run prettier && npm run build && npm run coverage && npm run docs && npm outdated && echo 'preflight passed'",
     "prettier": "prettier \"**/**.{js,ts,json,css,scss,html}\" --write",
     "touch": "#find . -exec touch {} \\;",
     "build": "npx tsc",
