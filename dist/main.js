@@ -34,7 +34,7 @@ commands.set('getseed', async (arg0, arg1, arg2, arg3) => {
 });
 commands.set('bgetprivatekey', async (arg0, arg1, arg2, arg3) => {
     const response = index.getPrivateKeyFromSeed(arg0, Number(arg1));
-    console.log('getseed response', response);
+    console.log('banano getprivatekey response', response);
     return response;
 });
 commands.set('bgetaccount', async (arg0, arg1, arg2, arg3) => {
@@ -94,9 +94,22 @@ commands.set('breceive', async (arg0, arg1, arg2, arg3) => {
         threshold: 1,
     };
     const pendingResp = await httpsRateLimit.sendRequest(pendingReq);
+    let badPendingResponse = '';
+    if (pendingResp.blocks == undefined) {
+        badPendingResponse = 'pendingResp.blocks == undefined';
+    }
+    else if (pendingResp.blocks[account] == undefined) {
+        badPendingResponse = 'pendingResp.blocks[account] == undefined';
+    }
+    else if (pendingResp.blocks[account][hash] == undefined) {
+        badPendingResponse = 'pendingResp.blocks[account][hash] == undefined';
+    }
+    if (badPendingResponse.length != 0) {
+        console.log('banano breceive badPendingResponse', badPendingResponse, pendingResp);
+        return '';
+    }
     const pendingValueRaw = pendingResp.blocks[account][hash];
     if (historyHistory.length == 0) {
-        // const block: index.Block = {
         const block = {
             type: 'state',
             account: account,
@@ -105,7 +118,6 @@ commands.set('breceive', async (arg0, arg1, arg2, arg3) => {
             balance: pendingValueRaw,
             link: hash,
             signature: '',
-            // work : '',
         };
         block.signature = await index.signBlock(privateKey, block);
         const processReq = {
@@ -116,33 +128,47 @@ commands.set('breceive', async (arg0, arg1, arg2, arg3) => {
             do_work: false,
         };
         // kalium API specific code.
-        // if (block.work === '') {
-        // delete block.work;
-        processReq.do_work = true;
-        // }
-        console.log('banano breceive processReq', processReq);
+        if (block.work == undefined) {
+            processReq.do_work = true;
+        }
+        console.log('banano receive processReq', processReq);
         const processResp = await httpsRateLimit.sendRequest(processReq);
-        console.log('banano breceive processResp', processResp);
+        console.log('banano receive processResp', processResp);
         return processResp;
     }
     else {
-        const frontiersReq = {
-            action: 'frontiers',
+        const accountInfoReq = {
+            action: 'account_info',
             account: account,
             count: 1,
         };
-        const frontiersResp = await httpsRateLimit.sendRequest(frontiersReq);
-        const previous = frontiersResp.frontiers[account];
-        // const receiveBlockHash = await bananoUtil.receive(
-        //     bananodeApi,
-        //     privateKey,
-        //     publicKey,
-        //     representative,
-        //     previous,
-        //     hash,
-        //     valueRaw,
-        //     accountPrefix,
-        // );
+        const accountInfoResp = await httpsRateLimit.sendRequest(accountInfoReq);
+        const previous = accountInfoResp.frontier;
+        const accountBalanceRaw = accountInfoResp.balance;
+        const valueRaw = (BigInt(pendingValueRaw) + BigInt(accountBalanceRaw)).toString();
+        const block = {
+            type: 'state',
+            account: account,
+            previous: previous,
+            representative: representative,
+            balance: valueRaw,
+            link: hash,
+            signature: '',
+        };
+        block.signature = await index.signBlock(privateKey, block);
+        const processReq = {
+            action: 'process',
+            json_block: 'true',
+            subtype: 'receive',
+            block: block,
+            do_work: false,
+        };
+        if (block.work == undefined) {
+            processReq.do_work = true;
+        }
+        console.log('banano receive processReq', processReq);
+        const processResp = await httpsRateLimit.sendRequest(processReq);
+        console.log('banano receive processResp', processResp);
     }
     return '';
 });

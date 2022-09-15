@@ -3,21 +3,7 @@ import * as bananojs from '@bananocoin/bananojs';
 
 const BANANO_PREFIX = bananojs.BANANO_PREFIX;
 
-// console.log('bananojs', bananojs);
-
-// const Block = bananojs.Block;
-// type Block = typeof bananojs.Block;
-
-declare type Block = {
-  type: string;
-  account: string;
-  previous: string;
-  representative: string;
-  balance: string;
-  link: string;
-  signature: string;
-  // work: string;
-};
+type Block = bananojs.Block;
 
 const getSeed = (): string => {
   return crypto.randomBytes(32).toString('hex').toUpperCase();

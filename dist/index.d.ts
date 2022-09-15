@@ -1,13 +1,6 @@
+import * as bananojs from '@bananocoin/bananojs';
 declare const BANANO_PREFIX: any;
-declare type Block = {
-    type: string;
-    account: string;
-    previous: string;
-    representative: string;
-    balance: string;
-    link: string;
-    signature: string;
-};
+declare type Block = bananojs.Block;
 declare const getSeed: () => string;
 declare const getPrivateKeyFromSeed: (seed: string, seedIx: number) => string;
 declare const getPublicKeyFromPrivateKey: (privateKey: string) => string;
