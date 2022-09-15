@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BANANO_PREFIX = exports.getAccountFromSeed = exports.getAccountFromPublicKey = exports.getPublicKeyFromPrivateKey = exports.getPrivateKeyFromSeed = exports.getSeed = void 0;
+exports.BANANO_PREFIX = exports.getAccountFromSeed = exports.getAccountFromPublicKey = exports.getPublicKeyFromPrivateKey = exports.getPrivateKeyFromSeed = exports.getSeed = exports.signBlock = void 0;
 const crypto = __importStar(require("crypto"));
 const bananojs = __importStar(require("@bananocoin/bananojs"));
 const BANANO_PREFIX = bananojs.BANANO_PREFIX;
@@ -51,4 +51,9 @@ const getAccountFromSeed = async (seed, seedIx) => {
     return account;
 };
 exports.getAccountFromSeed = getAccountFromSeed;
+const signBlock = async (privateKey, block) => {
+    // console.log('bananojs', bananojs);
+    return bananojs.BananoUtil.sign(privateKey, block);
+};
+exports.signBlock = signBlock;
 //# sourceMappingURL=index.js.map

@@ -3,6 +3,22 @@ import * as bananojs from '@bananocoin/bananojs';
 
 const BANANO_PREFIX = bananojs.BANANO_PREFIX;
 
+// console.log('bananojs', bananojs);
+
+// const Block = bananojs.Block;
+// type Block = typeof bananojs.Block;
+
+declare type Block = {
+  type: string;
+  account: string;
+  previous: string;
+  representative: string;
+  balance: string;
+  link: string;
+  signature: string;
+  // work: string;
+};
+
 const getSeed = (): string => {
   return crypto.randomBytes(32).toString('hex').toUpperCase();
 };
@@ -26,4 +42,9 @@ const getAccountFromSeed = async (seed: string, seedIx: number): Promise<string>
   return account;
 };
 
-export { getSeed, getPrivateKeyFromSeed, getPublicKeyFromPrivateKey, getAccountFromPublicKey, getAccountFromSeed, BANANO_PREFIX };
+const signBlock = async (privateKey: string, block: Block): Promise<string> => {
+  // console.log('bananojs', bananojs);
+  return bananojs.BananoUtil.sign(privateKey, block);
+};
+
+export { signBlock, getSeed, getPrivateKeyFromSeed, getPublicKeyFromPrivateKey, getAccountFromPublicKey, getAccountFromSeed, BANANO_PREFIX, type Block };

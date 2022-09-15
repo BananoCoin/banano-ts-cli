@@ -45,8 +45,13 @@ commands.set('bgetaccount', async (arg0, arg1, arg2, arg3) => {
     return account;
 });
 commands.set('bcheckpending', async (arg0, arg1, arg2, arg3) => {
-    const accounts = [arg0];
-    const count = parseInt(arg1, 10);
+    let account = arg0;
+    let countStr = arg1;
+    if (countStr == undefined) {
+        countStr = '1';
+    }
+    const count = parseInt(countStr, 10);
+    const accounts = [account];
     // https://docs.nano.org/commands/rpc-protocol/#accounts_pending
     const formData = {
         action: 'accounts_pending',
@@ -55,9 +60,91 @@ commands.set('bcheckpending', async (arg0, arg1, arg2, arg3) => {
         threshold: 1,
     };
     httpsRateLimit.setUrl(bananodeUrl);
+    console.log('formData', formData);
     const pending = await httpsRateLimit.sendRequest(formData);
     console.log('banano checkpending response', pending);
     return pending;
+});
+commands.set('breceive', async (arg0, arg1, arg2, arg3) => {
+    const privateKey = arg0;
+    const hash = arg1;
+    const publicKey = await index.getPublicKeyFromPrivateKey(privateKey);
+    const account = index.getAccountFromPublicKey(publicKey, index.BANANO_PREFIX);
+    httpsRateLimit.setUrl(bananodeUrl);
+    const repReq = {
+        action: 'account_representative',
+        accounts: account,
+    };
+    const repResp = await httpsRateLimit.sendRequest(repReq);
+    let representative = repResp.representative;
+    if (!representative) {
+        representative = account;
+    }
+    const historyReq = {
+        action: 'account_history',
+        account: account,
+        count: 1,
+    };
+    const historyResp = await httpsRateLimit.sendRequest(historyReq);
+    const historyHistory = historyResp.history;
+    const pendingReq = {
+        action: 'accounts_pending',
+        accounts: [account],
+        count: 1,
+        threshold: 1,
+    };
+    const pendingResp = await httpsRateLimit.sendRequest(pendingReq);
+    const pendingValueRaw = pendingResp.blocks[account][hash];
+    if (historyHistory.length == 0) {
+        // const block: index.Block = {
+        const block = {
+            type: 'state',
+            account: account,
+            previous: '0000000000000000000000000000000000000000000000000000000000000000',
+            representative: representative,
+            balance: pendingValueRaw,
+            link: hash,
+            signature: '',
+            // work : '',
+        };
+        block.signature = await index.signBlock(privateKey, block);
+        const processReq = {
+            action: 'process',
+            json_block: 'true',
+            subtype: 'open',
+            block: block,
+            do_work: false,
+        };
+        // kalium API specific code.
+        // if (block.work === '') {
+        // delete block.work;
+        processReq.do_work = true;
+        // }
+        console.log('banano breceive processReq', processReq);
+        const processResp = await httpsRateLimit.sendRequest(processReq);
+        console.log('banano breceive processResp', processResp);
+        return processResp;
+    }
+    else {
+        const frontiersReq = {
+            action: 'frontiers',
+            account: account,
+            count: 1,
+        };
+        const frontiersResp = await httpsRateLimit.sendRequest(frontiersReq);
+        const previous = frontiersResp.frontiers[account];
+        // const receiveBlockHash = await bananoUtil.receive(
+        //     bananodeApi,
+        //     privateKey,
+        //     publicKey,
+        //     representative,
+        //     previous,
+        //     hash,
+        //     valueRaw,
+        //     accountPrefix,
+        // );
+    }
+    return '';
 });
 const run = async () => {
     console.log('bananots');
