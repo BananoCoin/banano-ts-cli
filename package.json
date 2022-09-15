@@ -1,6 +1,6 @@
 {
   "name": "@bananocoin/bananots",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "banano typescript",
   "main": "src/main.js",
   "repository": {
