@@ -5,6 +5,8 @@ const BANANO_PREFIX = bananojs.BANANO_PREFIX;
 
 type Block = bananojs.Block;
 
+type BananoParts = bananojs.BananoParts;
+
 const getSeed = (): string => {
   return crypto.randomBytes(32).toString('hex').toUpperCase();
 };
@@ -17,14 +19,18 @@ const getPublicKeyFromPrivateKey = (privateKey: string): string => {
   return bananojs.BananoUtil.getPublicKey(privateKey);
 };
 
-const getAccountFromPublicKey = (privateKey: string, prefix: string): string => {
-  return bananojs.BananoUtil.getAccount(privateKey, prefix);
+const getAccountFromPublicKey = (publicKey: string): string => {
+  return bananojs.BananoUtil.getAccount(publicKey, BANANO_PREFIX);
+};
+
+const getPublicKeyFromAccount = (privateKey: string): string => {
+  return bananojs.BananoUtil.getAccountPublicKey(privateKey);
 };
 
 const getAccountFromSeed = async (seed: string, seedIx: number): Promise<string> => {
   const privateKey = getPrivateKeyFromSeed(seed, seedIx);
   const publicKey = await getPublicKeyFromPrivateKey(privateKey);
-  const account = getAccountFromPublicKey(publicKey, BANANO_PREFIX);
+  const account = getAccountFromPublicKey(publicKey);
   return account;
 };
 
@@ -33,4 +39,8 @@ const signBlock = async (privateKey: string, block: Block): Promise<string> => {
   return bananojs.BananoUtil.sign(privateKey, block);
 };
 
-export { signBlock, getSeed, getPrivateKeyFromSeed, getPublicKeyFromPrivateKey, getAccountFromPublicKey, getAccountFromSeed, BANANO_PREFIX, type Block };
+const getAmountPartsFromRaw = (amountRawStr: string): BananoParts => {
+  return bananojs.BananoUtil.getAmountPartsFromRaw(amountRawStr, BANANO_PREFIX);
+};
+
+export { signBlock, getSeed, getPrivateKeyFromSeed, getPublicKeyFromPrivateKey, getAccountFromPublicKey, getPublicKeyFromAccount, getAccountFromSeed, getAmountPartsFromRaw, BANANO_PREFIX, type Block, type BananoParts };

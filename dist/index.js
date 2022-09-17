@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BANANO_PREFIX = exports.getAccountFromSeed = exports.getAccountFromPublicKey = exports.getPublicKeyFromPrivateKey = exports.getPrivateKeyFromSeed = exports.getSeed = exports.signBlock = void 0;
+exports.BANANO_PREFIX = exports.getAmountPartsFromRaw = exports.getAccountFromSeed = exports.getPublicKeyFromAccount = exports.getAccountFromPublicKey = exports.getPublicKeyFromPrivateKey = exports.getPrivateKeyFromSeed = exports.getSeed = exports.signBlock = void 0;
 const crypto = __importStar(require("crypto"));
 const bananojs = __importStar(require("@bananocoin/bananojs"));
 const BANANO_PREFIX = bananojs.BANANO_PREFIX;
@@ -40,14 +40,18 @@ const getPublicKeyFromPrivateKey = (privateKey) => {
     return bananojs.BananoUtil.getPublicKey(privateKey);
 };
 exports.getPublicKeyFromPrivateKey = getPublicKeyFromPrivateKey;
-const getAccountFromPublicKey = (privateKey, prefix) => {
-    return bananojs.BananoUtil.getAccount(privateKey, prefix);
+const getAccountFromPublicKey = (publicKey) => {
+    return bananojs.BananoUtil.getAccount(publicKey, BANANO_PREFIX);
 };
 exports.getAccountFromPublicKey = getAccountFromPublicKey;
+const getPublicKeyFromAccount = (privateKey) => {
+    return bananojs.BananoUtil.getAccountPublicKey(privateKey);
+};
+exports.getPublicKeyFromAccount = getPublicKeyFromAccount;
 const getAccountFromSeed = async (seed, seedIx) => {
     const privateKey = getPrivateKeyFromSeed(seed, seedIx);
     const publicKey = await getPublicKeyFromPrivateKey(privateKey);
-    const account = getAccountFromPublicKey(publicKey, BANANO_PREFIX);
+    const account = getAccountFromPublicKey(publicKey);
     return account;
 };
 exports.getAccountFromSeed = getAccountFromSeed;
@@ -56,4 +60,8 @@ const signBlock = async (privateKey, block) => {
     return bananojs.BananoUtil.sign(privateKey, block);
 };
 exports.signBlock = signBlock;
+const getAmountPartsFromRaw = (amountRawStr) => {
+    return bananojs.BananoUtil.getAmountPartsFromRaw(amountRawStr, BANANO_PREFIX);
+};
+exports.getAmountPartsFromRaw = getAmountPartsFromRaw;
 //# sourceMappingURL=index.js.map

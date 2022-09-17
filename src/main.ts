@@ -20,7 +20,7 @@ commands.set('bgetprivatekey', async (arg0: string, arg1: string, arg2: string, 
 commands.set('bgetaccount', async (arg0: string, arg1: string, arg2: string, arg3: string): Promise<string> => {
   const publicKey = await index.getPublicKeyFromPrivateKey(arg0);
   console.log('banano getaccount publicKey', publicKey);
-  const account = index.getAccountFromPublicKey(publicKey, index.BANANO_PREFIX);
+  const account = index.getAccountFromPublicKey(publicKey);
   console.log('banano getaccount account', account);
   return account;
 });
@@ -51,7 +51,7 @@ commands.set('breceive', async (arg0: string, arg1: string, arg2: string, arg3: 
   const privateKey = arg0;
   const hash = arg1;
   const publicKey = await index.getPublicKeyFromPrivateKey(privateKey);
-  const account = index.getAccountFromPublicKey(publicKey, index.BANANO_PREFIX);
+  const account = index.getAccountFromPublicKey(publicKey);
 
   httpsRateLimit.setUrl(bananodeUrl);
   const repReq = {
@@ -156,8 +156,74 @@ commands.set('breceive', async (arg0: string, arg1: string, arg2: string, arg3: 
     console.log('banano receive processReq', processReq);
     const processResp = await httpsRateLimit.sendRequest(processReq);
     console.log('banano receive processResp', processResp);
+    return processResp;
   }
-  return '';
+});
+
+commands.set('sendraw', async (arg0: string, arg1: string, arg2: string, arg3: string): Promise<string> => {
+  const privateKey = arg0;
+  const destAccount = arg1;
+  const amountRaw = arg1;
+  const publicKey = await index.getPublicKeyFromPrivateKey(privateKey);
+  const accountAddress = index.getAccountFromPublicKey(publicKey);
+  const accountInfoReq = {
+    action: 'account_info',
+    account: accountAddress,
+    count: 1,
+    representative: true,
+  };
+  const accountInfoResp = await httpsRateLimit.sendRequest(accountInfoReq);
+  if (accountInfoResp == undefined) {
+    throw Error(`The server's account info cannot be retrieved, please try again.`);
+  }
+  const previous = accountInfoResp.frontier;
+  const balanceRaw = accountInfoResp.balance;
+  const representative = accountInfoResp.representative;
+
+  if (balanceRaw == undefined) {
+    throw Error(`The server's account balance cannot be retrieved, please try again.`);
+  }
+
+  if (BigInt(balanceRaw) < BigInt(amountRaw)) {
+    const balance = index.getAmountPartsFromRaw(balanceRaw);
+    const amount = index.getAmountPartsFromRaw(amountRaw);
+    const balanceMajorAmount = balance.banano;
+    const amountMajorAmount = amount.banano;
+    throw Error(`The server's account balance of ${balanceMajorAmount} banano is too small, cannot withdraw ${amountMajorAmount} banano. In raw ${balanceRaw} < ${amountRaw}.`);
+  }
+  const remaining = BigInt(balanceRaw) - BigInt(amountRaw);
+
+  const remainingDecimal = remaining.toString(10);
+  const remainingPadded = remaining.toString(16).padStart(32, '0');
+
+  const destPublicKey = index.getPublicKeyFromAccount(destAccount);
+
+  const block: index.Block = {
+    type: 'state',
+    account: accountAddress,
+    previous: previous,
+    representative: representative,
+    balance: remainingDecimal,
+    link: destPublicKey,
+    signature: '',
+  };
+  block.signature = await index.signBlock(privateKey, block);
+
+  const processReq = {
+    action: 'process',
+    json_block: 'true',
+    subtype: 'send',
+    block: block,
+    do_work: false,
+  };
+  if (block.work == undefined) {
+    processReq.do_work = true;
+  }
+
+  console.log('banano send processReq', processReq);
+  const processResp = await httpsRateLimit.sendRequest(processReq);
+  console.log('banano send processResp', processResp);
+  return processResp;
 });
 
 const run = async () => {

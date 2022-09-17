@@ -33,7 +33,7 @@ describe('index', () => {
     const actual = privateKey;
     expect(expected).to.deep.equal(actual);
   });
-  it('getAccountFromSeed Random', async () => {
+  it('getAccountFromSeed Specific', async () => {
     const seed = ZEROES;
     const seedIx = 0;
     const account = await index.getAccountFromSeed(seed, seedIx);
@@ -41,7 +41,7 @@ describe('index', () => {
     const actual = account;
     expect(expected).to.deep.equal(actual);
   });
-  it('getAccountFromSeed Specific', async () => {
+  it('getAccountFromSeed Random', async () => {
     const seed = await index.getSeed();
     const seedIx = 0;
     const account = await index.getAccountFromSeed(seed, seedIx);
@@ -49,7 +49,7 @@ describe('index', () => {
     const actual = account.length;
     expect(expected).to.deep.equal(actual);
   });
-  it('signBlock Random', async () => {
+  it('signBlock Specific', async () => {
     const seed = ZEROES;
     const block = {
       type: 'state',
@@ -63,6 +63,26 @@ describe('index', () => {
     const signature = await index.signBlock(seed, block);
     const expected = signature;
     const actual = 'F51DC4D910FF20669F5E5ADBD93861514C05531DD57533FE248DB7558B3DEB2FE29ECEA32DF66647F16AC571C4D979A913CA6ACA48CC92951D3BE088D9710E08';
+    expect(expected).to.deep.equal(actual);
+  });
+  it('getPublicKeyFromAccount Specific', async () => {
+    const account = 'ban_3i1aq1cchnmbn9x5rsbap8b15akfh7wj7pwskuzi7ahz8oq6cobd99d4r3b7';
+    const publicKey = await index.getPublicKeyFromAccount(account);
+    const expected = 'C008B814A7D269A1FA3C6528B19201A24D797912DB9996FF02A1FF356E45552B';
+    const actual = publicKey;
+    expect(expected).to.deep.equal(actual);
+  });
+  it('getAmountPartsFromRaw Specific', async () => {
+    const raw = ZEROES;
+    const amountParts = await index.getAmountPartsFromRaw(raw);
+    const expected = {
+      banano: '0',
+      banoshi: '0',
+      majorName: 'banano',
+      minorName: 'banoshi',
+      raw: '0',
+    };
+    const actual = amountParts;
     expect(expected).to.deep.equal(actual);
   });
 
