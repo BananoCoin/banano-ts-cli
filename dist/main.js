@@ -172,10 +172,11 @@ commands.set('breceive', async (arg0, arg1, arg2, arg3) => {
         return processResp;
     }
 });
-commands.set('sendraw', async (arg0, arg1, arg2, arg3) => {
+commands.set('bsendraw', async (arg0, arg1, arg2, arg3) => {
     const privateKey = arg0;
     const destAccount = arg1;
-    const amountRaw = arg1;
+    const amountRaw = arg2;
+    httpsRateLimit.setUrl(bananodeUrl);
     const publicKey = await index.getPublicKeyFromPrivateKey(privateKey);
     const accountAddress = index.getAccountFromPublicKey(publicKey);
     const accountInfoReq = {

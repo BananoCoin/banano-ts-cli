@@ -160,10 +160,13 @@ commands.set('breceive', async (arg0: string, arg1: string, arg2: string, arg3: 
   }
 });
 
-commands.set('sendraw', async (arg0: string, arg1: string, arg2: string, arg3: string): Promise<string> => {
+commands.set('bsendraw', async (arg0: string, arg1: string, arg2: string, arg3: string): Promise<string> => {
   const privateKey = arg0;
   const destAccount = arg1;
-  const amountRaw = arg1;
+  const amountRaw = arg2;
+
+  httpsRateLimit.setUrl(bananodeUrl);
+
   const publicKey = await index.getPublicKeyFromPrivateKey(privateKey);
   const accountAddress = index.getAccountFromPublicKey(publicKey);
   const accountInfoReq = {
