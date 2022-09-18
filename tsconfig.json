@@ -1,0 +1,24 @@
+{
+  "include": ["src"],
+  "compilerOptions": {
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "declaration": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "lib": ["es2019"],
+    "module": "commonjs",
+    "moduleResolution": "nodenext",
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "resolveJsonModule": true,
+    "outDir": "./dist",
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "strict": true,
+    "target": "es2019",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  }
+}
