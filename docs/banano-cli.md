@@ -62,6 +62,10 @@
         bananots
         banano sendbanano response BF3BA5C6F91D52E88658E6AB800237C4023AD59392B4AB203EBA1E5BF706E535
 
+# change rep using private key
+
+        npm start bchangerep 1111111111111111111111111111111111111111111111111111111111111111 ban_1mutsny6d7d95w733rah4e5s14nutdtodgjh1wjxoyfnhsxchf9ars1en4a8
+
 # send using private key and a json file
 
         json file is of the format:

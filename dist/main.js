@@ -231,6 +231,46 @@ commands.set('bsendraw', async (arg0, arg1, arg2, arg3) => {
     console.log('banano send processResp', processResp);
     return processResp;
 });
+commands.set('bchangerep', async (arg0, arg1, arg2, arg3) => {
+    const privateKey = arg0;
+    const representative = arg1;
+    httpsRateLimit.setUrl(bananodeUrl);
+    const publicKey = await index.getPublicKeyFromPrivateKey(privateKey);
+    const accountAddress = index.getAccountFromPublicKey(publicKey);
+    const accountInfoReq = {
+        action: 'account_info',
+        account: accountAddress,
+        count: 1,
+        representative: true,
+    };
+    const accountInfoResp = await httpsRateLimit.sendRequest(accountInfoReq);
+    const previous = accountInfoResp.frontier;
+    const balanceRaw = accountInfoResp.balance;
+    const block = {
+        type: 'state',
+        account: accountAddress,
+        previous: previous,
+        representative: representative,
+        balance: balanceRaw,
+        link: '0000000000000000000000000000000000000000000000000000000000000000',
+        signature: '',
+    };
+    block.signature = await index.signBlock(privateKey, block);
+    const processReq = {
+        action: 'process',
+        json_block: 'true',
+        subtype: 'change',
+        block: block,
+        do_work: false,
+    };
+    if (block.work == undefined) {
+        processReq.do_work = true;
+    }
+    console.log('banano send processReq', processReq);
+    const processResp = await httpsRateLimit.sendRequest(processReq);
+    console.log('banano send processResp', processResp);
+    return processResp;
+});
 const run = async () => {
     console.log('bananots');
     if (process.argv.length < 3) {
