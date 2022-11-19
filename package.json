@@ -5,7 +5,7 @@
   "main": "src/main.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/BananoCoin/bananots.git"
+    "url": "git+https://github.com/BananoCoin/banano-ts-cli.git"
   },
   "scripts": {
     "coverage": "nyc ts-mocha --recursive -t 100000 test/unit/**/*.ts",
