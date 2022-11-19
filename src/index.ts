@@ -1,7 +1,7 @@
 import * as crypto from 'crypto';
 import * as bananojs from '@bananocoin/bananojs';
 
-const BANANO_PREFIX = bananojs.BANANO_PREFIX;
+const BANANO_PREFIX = bananojs.Main.BANANO_PREFIX;
 
 type Block = bananojs.Block;
 
@@ -9,6 +9,14 @@ type BananoParts = bananojs.BananoParts;
 
 const getSeed = (): string => {
   return crypto.randomBytes(32).toString('hex').toUpperCase();
+};
+
+const setUrl = (url: string) => {
+  bananojs.Main.setBananodeApiUrl(url);
+};
+
+const getAccountsBalances = async (accounts: string[]): Promise<object> => {
+  return bananojs.BananodeApi.getAccountsBalances(accounts);
 };
 
 const getPrivateKeyFromSeed = (seed: string, seedIx: number): string => {
@@ -43,4 +51,18 @@ const getAmountPartsFromRaw = (amountRawStr: string): BananoParts => {
   return bananojs.BananoUtil.getAmountPartsFromRaw(amountRawStr, BANANO_PREFIX);
 };
 
-export { signBlock, getSeed, getPrivateKeyFromSeed, getPublicKeyFromPrivateKey, getAccountFromPublicKey, getPublicKeyFromAccount, getAccountFromSeed, getAmountPartsFromRaw, BANANO_PREFIX, type Block, type BananoParts };
+export {
+  signBlock,
+  getSeed,
+  getPrivateKeyFromSeed,
+  getPublicKeyFromPrivateKey,
+  getAccountFromPublicKey,
+  getPublicKeyFromAccount,
+  getAccountFromSeed,
+  getAmountPartsFromRaw,
+  getAccountsBalances,
+  setUrl,
+  BANANO_PREFIX,
+  type Block,
+  type BananoParts,
+};

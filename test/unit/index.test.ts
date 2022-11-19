@@ -17,6 +17,25 @@ describe('index', () => {
     const actual = seed.length;
     expect(expected).to.deep.equal(actual);
   });
+  it('getAccountsBalances Random', async () => {
+    const seed = await index.getSeed();
+    const seedIx = 0;
+    const account = await index.getAccountFromSeed(seed, seedIx);
+    index.setUrl('https://kaliumapi.appditto.com/api');
+    const actual = await index.getAccountsBalances([account]);
+    const expected = {
+      balances: {},
+    };
+    expected.balances[account] = {
+      balance: '0',
+      balance_decimal: '0.0',
+      pending: '0',
+      receivable: '0',
+      receivable_decimal: '0.0',
+    };
+
+    expect(expected).to.deep.equal(actual);
+  });
   it('getPrivateKeyFromSeed Random', async () => {
     const seed = await index.getSeed();
     const seedIx = 0;

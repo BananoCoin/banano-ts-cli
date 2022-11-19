@@ -23,15 +23,23 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BANANO_PREFIX = exports.getAmountPartsFromRaw = exports.getAccountFromSeed = exports.getPublicKeyFromAccount = exports.getAccountFromPublicKey = exports.getPublicKeyFromPrivateKey = exports.getPrivateKeyFromSeed = exports.getSeed = exports.signBlock = void 0;
+exports.BANANO_PREFIX = exports.setUrl = exports.getAccountsBalances = exports.getAmountPartsFromRaw = exports.getAccountFromSeed = exports.getPublicKeyFromAccount = exports.getAccountFromPublicKey = exports.getPublicKeyFromPrivateKey = exports.getPrivateKeyFromSeed = exports.getSeed = exports.signBlock = void 0;
 const crypto = __importStar(require("crypto"));
 const bananojs = __importStar(require("@bananocoin/bananojs"));
-const BANANO_PREFIX = bananojs.BANANO_PREFIX;
+const BANANO_PREFIX = bananojs.Main.BANANO_PREFIX;
 exports.BANANO_PREFIX = BANANO_PREFIX;
 const getSeed = () => {
     return crypto.randomBytes(32).toString('hex').toUpperCase();
 };
 exports.getSeed = getSeed;
+const setUrl = (url) => {
+    bananojs.Main.setBananodeApiUrl(url);
+};
+exports.setUrl = setUrl;
+const getAccountsBalances = async (accounts) => {
+    return bananojs.BananodeApi.getAccountsBalances(accounts);
+};
+exports.getAccountsBalances = getAccountsBalances;
 const getPrivateKeyFromSeed = (seed, seedIx) => {
     return bananojs.BananoUtil.getPrivateKey(seed, seedIx);
 };
