@@ -8,7 +8,7 @@
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
     "lib": ["es2019"],
-    "module": "commonjs",
+    "module": "nodenext",
     "moduleResolution": "nodenext",
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
