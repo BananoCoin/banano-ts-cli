@@ -1,6 +1,6 @@
 {
   "name": "@bananocoin/banano-ts-cli",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "banano cli that uses typescript bindings",
   "main": "src/main.js",
   "repository": {
